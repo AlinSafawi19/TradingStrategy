@@ -57,7 +57,7 @@ const LoadingSpinner = ({ size = 'md', isDarkMode }: { size?: 'sm' | 'md' | 'lg'
   return (
     <div className="flex items-center justify-center loading-spinner">
       <FiLoader
-        className={`${sizeClasses[size]} animate-spin ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}
+        className={`${sizeClasses[size]} animate-spin ${isDarkMode ? 'text-gray-400' : 'text-blue-600'}`}
         style={{
           animation: 'spin 1s linear infinite',
           transform: 'translateZ(0)',
@@ -944,7 +944,7 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
         {/* Chart Container */}
         <div
           ref={chartRef}
-          className={`h-full ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} relative overflow-hidden select-none chart-container ${isDragging ? 'chart-dragging' : 'chart-grab'}`}
+                      className={`h-full ${isDarkMode ? 'bg-gray-900' : ''} relative overflow-hidden select-none chart-container ${isDragging ? 'chart-dragging' : 'chart-grab'}`}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
@@ -997,7 +997,7 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
               >
                 <div className={`${isDarkMode ? 'bg-gray-800/90 border-gray-600' : 'bg-white/90 border-gray-200'} border rounded px-1.5 py-0.5 shadow-sm flex items-center`}>
                   <div className={`flex flex-col items-end space-y-0 mr-2`}>
-                    <div className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <div className={`text-xs font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
                       ${currentPrice.toFixed(2)}
                     </div>
                     <div className={`flex items-center space-x-1 text-xs font-medium ${priceChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
@@ -1007,7 +1007,7 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
                   </div>
                   {/* Price line connector */}
                   <div
-                    className={`price-line-connector ${isDarkMode ? 'bg-green-400' : 'bg-green-600'}`}
+                    className={`price-line-connector ${isDarkMode ? 'bg-green-400' : 'bg-green-500'}`}
                   ></div>
                 </div>
               </div>
@@ -1046,7 +1046,7 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
             {Array.from({ length: 6 }, (_, i) => {
               const price = priceInfo.maxPrice - (priceInfo.priceRange * i / 5);
               return (
-                <div key={i} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div key={i} className={`${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                   {price.toFixed(2)}
                 </div>
               );
@@ -1060,7 +1060,7 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
               const candle = viewportData.visibleData[index];
               if (!candle || !candle.timestamp) return <div key={i}></div>;
               return (
-                <div key={i} className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                <div key={i} className={`${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
                   {format(candle.timestamp, 'HH:mm')}
                 </div>
               );
@@ -1069,7 +1069,7 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
 
           {/* Timezone Indicator */}
           <div className="absolute bottom-6 left-2 text-xs opacity-60 pointer-events-none">
-            <span className={`${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+            <span className={`${isDarkMode ? 'text-gray-500' : 'text-slate-500'}`}>
               UTC
             </span>
           </div>
@@ -1161,45 +1161,45 @@ export default function TradingDashboard() {
   }, []);
 
   return (
-    <div className={`h-screen flex flex-col trading-dashboard ${isDarkMode ? 'bg-gray-900 text-white' : 'bg-gray-50 text-gray-900'}`}>
+    <div className={`h-screen flex flex-col trading-dashboard ${isDarkMode ? 'bg-gray-900 text-white' : 'light-mode-enhanced'}`}>
       {/* Header */}
-      <header className={`border-b px-6 py-2 flex justify-between items-center shadow-lg ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <GiGoldBar className={`w-6 h-6 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-            <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Gold Spot / U.S. Dollar • 1m • OANDA</h2>
+      <header className={`border-b px-6 py-2 flex justify-between items-center shadow-lg ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'header-enhanced'}`}>
+                  <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <GiGoldBar className={`w-6 h-6 ${isDarkMode ? 'text-gray-400' : 'text-slate-700'}`} />
+              <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Gold Spot / U.S. Dollar • 1m • OANDA</h2>
+            </div>
           </div>
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Data: File-based
-          </div>
-          <button
-            type='button'
-            onClick={() => setShowIndicatorSettings(true)}
-            className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 border btn-optimized ${isDarkMode
-              ? 'bg-gray-700 border-gray-500 hover:bg-gray-600'
-              : 'bg-gray-100 border-gray-300 hover:bg-gray-200'
-              }`}
-            title="Indicator Settings"
-          >
-            <FiSettings className="w-5 h-5 text-gray-300" />
-          </button>
-          <button
-            type='button'
-            onClick={toggleTheme}
-            className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 border btn-optimized ${isDarkMode
-              ? 'bg-gray-700 border-gray-500 hover:bg-gray-600'
-              : 'bg-gray-100 border-gray-300 hover:bg-gray-200'
-              }`}
-            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          >
-            {isDarkMode ? (
-              <FiMoon className="w-5 h-5 text-gray-300" />
-            ) : (
-              <FiSun className="w-5 h-5 text-gray-600" />
-            )}
-          </button>
+          <div className="flex items-center space-x-4">
+            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+              Data: File-based
+            </div>
+                      <button
+              type='button'
+              onClick={() => setShowIndicatorSettings(true)}
+              className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 border btn-optimized ${isDarkMode
+                ? 'bg-gray-700 border-gray-500 hover:bg-gray-600'
+                : 'button-enhanced'
+                }`}
+              title="Indicator Settings"
+            >
+              <FiSettings className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-slate-600'}`} />
+            </button>
+            <button
+              type='button'
+              onClick={toggleTheme}
+              className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 border btn-optimized ${isDarkMode
+                ? 'bg-gray-700 border-gray-500 hover:bg-gray-600'
+                : 'button-enhanced'
+                }`}
+              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {isDarkMode ? (
+                <FiMoon className="w-5 h-5 text-gray-300" />
+              ) : (
+                <FiSun className="w-5 h-5 text-slate-600" />
+              )}
+            </button>
         </div>
       </header>
 
@@ -1209,7 +1209,7 @@ export default function TradingDashboard() {
           <div className={`absolute inset-0 flex items-center justify-center bg-opacity-75 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
             <div className="flex flex-col items-center space-y-3">
               <LoadingSpinner size="lg" isDarkMode={isDarkMode} />
-              <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
                 Loading {selectedTimeRange} data...
               </div>
               {loadProgress > 0 && (
@@ -1234,7 +1234,7 @@ export default function TradingDashboard() {
       </main>
 
       {/* Secondary Footer - Trading Logic Displays */}
-      <footer className={`px-6 py-3 ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'bg-gray-100 border-gray-200'}`}>
+      <footer className={`px-6 py-3 ${isDarkMode ? 'bg-gray-900 border-gray-700' : 'footer-enhanced'}`}>
         <div className="flex justify-between items-center">
           {/* Detailed Indicator Status */}
           <div className="flex items-center space-x-4">
@@ -1265,32 +1265,32 @@ export default function TradingDashboard() {
               return (
                 <div className="flex items-center space-x-4 text-xs">
                   <div className={`indicator-badge ${sslResult.signal === 'BUY'
-                    ? 'indicator-badge-buy'
+                    ? isDarkMode ? 'indicator-badge-buy' : 'indicator-badge-buy-enhanced'
                     : sslResult.signal === 'SELL'
-                      ? 'indicator-badge-sell'
+                      ? isDarkMode ? 'indicator-badge-sell' : 'indicator-badge-sell-enhanced'
                       : isDarkMode
                         ? 'indicator-badge-dark'
-                        : 'indicator-badge-neutral'
+                        : 'indicator-badge-enhanced'
                     }`}>
                     <span className="indicator-dot-ssl">●</span> SSL: {sslResult.signal}
                   </div>
                   <div className={`indicator-badge ${trendResult.trendDirection === 'GREEN'
-                    ? 'indicator-badge-buy'
+                    ? isDarkMode ? 'indicator-badge-buy' : 'indicator-badge-buy-enhanced'
                     : trendResult.trendDirection === 'RED'
-                      ? 'indicator-badge-sell'
+                      ? isDarkMode ? 'indicator-badge-sell' : 'indicator-badge-sell-enhanced'
                       : isDarkMode
                         ? 'indicator-badge-dark'
-                        : 'indicator-badge-neutral'
+                        : 'indicator-badge-enhanced'
                     }`}>
                     <span className="indicator-dot-trend">●</span> Trend Fusion: {trendResult.trendDirection} (RSI: {trendResult.rsiValue.toFixed(1)})
                   </div>
                   <div className={`indicator-badge ${sslResult.signal === 'BUY' && trendResult.trendDirection === 'GREEN'
-                    ? 'indicator-badge-buy'
+                    ? isDarkMode ? 'indicator-badge-buy' : 'indicator-badge-buy-enhanced'
                     : sslResult.signal === 'SELL' && trendResult.trendDirection === 'RED'
-                      ? 'indicator-badge-sell'
+                      ? isDarkMode ? 'indicator-badge-sell' : 'indicator-badge-sell-enhanced'
                       : isDarkMode
                         ? 'indicator-badge-dark'
-                        : 'indicator-badge-neutral'
+                        : 'indicator-badge-enhanced'
                     }`}>
                     Combined: {sslResult.signal === 'BUY' && trendResult.trendDirection === 'GREEN'
                       ? 'BUY'
@@ -1310,12 +1310,12 @@ export default function TradingDashboard() {
               if (strategy.priceData.length < minDataPoints) {
                 return (
                   <div className="flex items-center space-x-2">
-                    <div className={`px-3 py-1 rounded-full text-xs font-bold trading-indicator ${isDarkMode ? 'trading-indicator-dark' : 'trading-indicator-light'}`}>
-                      INSUFFICIENT DATA
-                    </div>
-                    <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} font-medium`}>
-                      {strategy.priceData.length} / {minDataPoints} points
-                    </div>
+                                      <div className={`px-3 py-1 rounded-full text-xs font-bold trading-indicator ${isDarkMode ? 'trading-indicator-dark' : 'trading-indicator-enhanced'}`}>
+                    INSUFFICIENT DATA
+                  </div>
+                  <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'} font-medium`}>
+                    {strategy.priceData.length} / {minDataPoints} points
+                  </div>
                   </div>
                 );
               }
@@ -1338,12 +1338,12 @@ export default function TradingDashboard() {
               return (
                 <div className="flex items-center space-x-2">
                   <div className={`px-3 py-1 rounded-full text-xs font-bold trading-indicator ${isBuySignal
-                    ? 'trading-indicator-buy signal-indicator signal-indicator-buy'
+                    ? isDarkMode ? 'trading-indicator-buy signal-indicator signal-indicator-buy' : 'trading-indicator-buy-enhanced signal-indicator signal-indicator-buy'
                     : isSellSignal
-                      ? 'trading-indicator-sell signal-indicator signal-indicator-sell'
+                      ? isDarkMode ? 'trading-indicator-sell signal-indicator signal-indicator-sell' : 'trading-indicator-sell-enhanced signal-indicator signal-indicator-sell'
                       : isDarkMode
                         ? 'trading-indicator-dark'
-                        : 'trading-indicator-light'
+                        : 'trading-indicator-enhanced'
                     }`}>
                     {isBuySignal ? 'BUY SIGNAL' : isSellSignal ? 'SELL SIGNAL' : 'NEUTRAL'}
                   </div>
@@ -1365,11 +1365,11 @@ export default function TradingDashboard() {
       </footer>
 
       {/* Time Range Footer */}
-      <footer className={`border-t px-6 py-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'}`}>
+      <footer className={`border-t px-6 py-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'footer-enhanced'}`}>
         <div className="flex justify-between items-center">
           {/* Time Range Selection */}
           <div className="flex items-center space-x-1">
-            <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-slate-700'}`}>
               Time Range:
             </span>
             {[
@@ -1382,6 +1382,7 @@ export default function TradingDashboard() {
               { key: 'YTD', title: 'Year to Date' },
               { key: '1Y', title: '1 Year' },
               { key: '5Y', title: '5 Years' },
+              { key: '10Y', title: '10 Years' },
               { key: 'All', title: 'All Data' }
             ].map(({ key, title }) => (
               <button
@@ -1397,10 +1398,10 @@ export default function TradingDashboard() {
                   : key === selectedTimeRange
                     ? isDarkMode
                       ? 'bg-gray-700 text-gray-300 border border-gray-500 shadow-md'
-                      : 'bg-gray-200 text-gray-700 border border-gray-400 shadow-md'
+                      : 'button-selected'
                     : isDarkMode
                       ? 'text-gray-300 hover:text-white hover:bg-gray-700 hover:shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 hover:shadow-sm'
+                      : 'button-enhanced'
                   }`}
               >
                 <span>{key}</span>
@@ -1408,7 +1409,7 @@ export default function TradingDashboard() {
             ))}
 
             {/* Separator */}
-            <div className={`w-px h-4 mx-2 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-300'}`}></div>
+            <div className={`w-px h-4 mx-2 ${isDarkMode ? 'bg-gray-600' : 'bg-slate-300'}`}></div>
 
             {/* Custom Date Range Icon */}
             <button
@@ -1417,10 +1418,10 @@ export default function TradingDashboard() {
               className={`p-1 rounded transition-colors btn-optimized ${selectedTimeRange === 'CUSTOM'
                 ? isDarkMode
                   ? 'bg-gray-700 text-gray-300 border border-gray-500'
-                  : 'bg-gray-200 text-gray-700 border border-gray-400'
+                  : 'button-selected'
                 : isDarkMode
                   ? 'text-gray-300 hover:text-white hover:bg-gray-700'
-                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                  : 'button-enhanced'
                 }`}
               title="Custom Date Range"
             >
@@ -1438,13 +1439,13 @@ export default function TradingDashboard() {
                 onClick={() => setShowCustomDatePicker(false)}
               >
                 <div
-                  className={`relative p-6 rounded-lg shadow-xl border max-w-4xl w-full mx-4 ${isDarkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'}`}
+                  className={`relative p-6 rounded-lg shadow-xl border max-w-4xl w-full mx-4 ${isDarkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-slate-300'}`}
                   onClick={(e) => e.stopPropagation()}
                 >
                   <button
                     type="button"
                     onClick={() => setShowCustomDatePicker(false)}
-                    className={`absolute top-2 right-2 p-1 rounded-full hover:bg-opacity-80 transition-colors ${isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'}`}
+                    className={`absolute top-2 right-2 p-1 rounded-full hover:bg-opacity-80 transition-colors ${isDarkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-slate-600 hover:text-slate-800 hover:bg-slate-100'}`}
                     aria-label="Close date picker"
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1453,16 +1454,16 @@ export default function TradingDashboard() {
                   </button>
 
                   <div className="flex flex-col space-y-4">
-                    <h3 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                    <h3 className={`text-sm font-semibold ${isDarkMode ? 'text-gray-200' : 'text-slate-800'}`}>
                       Custom Date Range
                     </h3>
 
                     <div className="flex flex-col space-y-4">
                       <div className="flex flex-col space-y-2">
-                        <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                        <label className={`text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
                           Select Date Range:
                         </label>
-                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-2`}>
+                        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'} mb-2`}>
                           Note: Today's date (highlighted in blue) is based on UTC timezone to match the trading data.
                           Only dates with available trading data are selectable.
                         </div>
@@ -1471,7 +1472,7 @@ export default function TradingDashboard() {
                             📅 Available data: {format(dataDateRange.from, 'MMM dd, yyyy')} - {format(dataDateRange.to, 'MMM dd, yyyy')}
                           </div>
                         )}
-                        <div className={`p-3 rounded border ${isDarkMode ? 'bg-gray-700 border-gray-500' : 'bg-gray-50 border-gray-200'}`}>
+                        <div className={`p-3 rounded border ${isDarkMode ? 'bg-gray-700 border-gray-500' : 'bg-slate-50 border-slate-200'}`}>
                           <DayPicker
                             mode="range"
                             selected={customDateRange}
@@ -1549,8 +1550,8 @@ export default function TradingDashboard() {
                               head_cell: 'text-gray-500 rounded-md w-8 font-normal text-xs',
                               row: 'flex w-full mt-2',
                               cell: 'text-center text-sm p-0 relative focus-within:relative focus-within:z-20',
-                              day: isDarkMode ? 'h-8 w-8 p-0 font-normal rounded-full hover:bg-gray-400 hover:text-gray-900' : 'h-8 w-8 p-0 font-normal rounded-full hover:bg-gray-200 hover:text-gray-900',
-                              day_selected: isDarkMode ? 'bg-gray-600 text-gray-200 hover:bg-gray-500 focus:bg-gray-500' : 'bg-gray-500 text-gray-100 hover:bg-gray-600 focus:bg-gray-600',
+                              day: isDarkMode ? 'h-8 w-8 p-0 font-normal rounded-full hover:bg-gray-400 hover:text-gray-900' : 'h-8 w-8 p-0 font-normal rounded-full hover:bg-slate-200 hover:text-slate-900',
+                              day_selected: isDarkMode ? 'bg-gray-600 text-gray-200 hover:bg-gray-500 focus:bg-gray-500' : 'bg-blue-500 text-white hover:bg-blue-600 focus:bg-blue-600',
                               day_today: '', // We're using custom today modifier instead
                               day_outside: 'text-gray-400 opacity-50',
                               day_disabled: 'text-gray-400 opacity-50',
@@ -1592,7 +1593,7 @@ export default function TradingDashboard() {
                           className={`px-4 py-2 text-sm font-medium rounded transition-colors border btn-optimized ${customDateRange?.from && customDateRange?.to
                             ? isDarkMode
                               ? 'bg-gray-700 border-gray-500 text-gray-300 hover:bg-gray-600'
-                              : 'bg-gray-100 border-gray-300 text-gray-700 hover:bg-gray-200'
+                              : 'button-selected'
                             : isDarkMode
                               ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-50 border-gray-500'
                               : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-50 border-gray-200'
@@ -1605,7 +1606,7 @@ export default function TradingDashboard() {
                           onClick={() => setShowCustomDatePicker(false)}
                           className={`px-4 py-2 text-sm font-medium rounded transition-colors btn-optimized ${isDarkMode
                             ? 'bg-gray-600 text-gray-300 hover:bg-gray-500'
-                            : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            : 'button-enhanced'
                             }`}
                         >
                           Cancel
@@ -1620,7 +1621,7 @@ export default function TradingDashboard() {
 
           {/* UTC Display */}
           <div className="flex justify-center items-center">
-            <span className={`text-xs ml-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            <span className={`text-xs ml-4 ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
               All times in UTC: {new Date().toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',

@@ -221,6 +221,11 @@ const loadTimeRangeData = async (timeRange: string): Promise<PriceData[]> => {
       const startIndex5Y = findStartIndex(fiveYearsAgo);
       filteredData = cachedData!.slice(startIndex5Y);
       break;
+    case '10Y':
+      const tenYearsAgo = new Date(dataEnd.getTime() - 10 * 365 * 24 * 60 * 60 * 1000);
+      const startIndex10Y = findStartIndex(tenYearsAgo);
+      filteredData = cachedData!.slice(startIndex10Y);
+      break;
     case 'All':
       filteredData = cachedData || [];
       break;

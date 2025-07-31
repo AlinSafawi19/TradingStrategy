@@ -173,24 +173,36 @@ class GoldDataGenerator {
   generateMainDataset() {
     console.log('Generating main gold trading dataset...');
     
-    // Generate 1 year of data with optimized intervals (all in UTC)
+    // Generate 10 years of data with optimized intervals (all in UTC)
     const now = new Date();
-    const oneYearAgo = new Date(Date.UTC(now.getUTCFullYear() - 1, now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
+    const tenYearsAgo = new Date(Date.UTC(now.getUTCFullYear() - 10, now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
     
     // For performance, we'll generate different intervals based on recency:
     // - 1-minute data for the last 1 month (highest frequency)
     // - 5-minute data for the last 3 months
     // - 15-minute data for the last 6 months
-    // - 1-hour data for the rest
+    // - 1-hour data for the last 1 year
+    // - 4-hour data for the last 3 years
+    // - 1-day data for the rest (10 years to 3 years ago)
     const oneMonthAgo = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
     const threeMonthsAgo = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 3, now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
     const sixMonthsAgo = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 6, now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
+    const oneYearAgo = new Date(Date.UTC(now.getUTCFullYear() - 1, now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
+    const threeYearsAgo = new Date(Date.UTC(now.getUTCFullYear() - 3, now.getUTCMonth(), now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
     
     let data = [];
     
-    // Generate 1-hour data from 1 year ago to 6 months ago
-    const historicalData = this.generateDataForPeriod(oneYearAgo, sixMonthsAgo, 60);
+    // Generate 1-day data from 10 years ago to 3 years ago (lowest frequency for historical data)
+    const historicalData = this.generateDataForPeriod(tenYearsAgo, threeYearsAgo, 1440); // 1440 minutes = 1 day
     data = data.concat(historicalData);
+    
+    // Generate 4-hour data for the last 3 years to 1 year ago
+    const threeYearData = this.generateDataForPeriod(threeYearsAgo, oneYearAgo, 240); // 240 minutes = 4 hours
+    data = data.concat(threeYearData);
+    
+    // Generate 1-hour data for the last 1 year to 6 months ago
+    const oneYearData = this.generateDataForPeriod(oneYearAgo, sixMonthsAgo, 60);
+    data = data.concat(oneYearData);
     
     // Generate 15-minute data for the last 6 months to 3 months ago
     const sixMonthData = this.generateDataForPeriod(sixMonthsAgo, threeMonthsAgo, 15);
@@ -205,7 +217,9 @@ class GoldDataGenerator {
     data = data.concat(recentData);
     
     console.log(`Generated main dataset: ${data.length} total candles`);
-    console.log(`- Historical (1H intervals): ${historicalData.length} candles`);
+    console.log(`- Historical (1D intervals): ${historicalData.length} candles`);
+    console.log(`- 3-year data (4H intervals): ${threeYearData.length} candles`);
+    console.log(`- 1-year data (1H intervals): ${oneYearData.length} candles`);
     console.log(`- 6-month data (15M intervals): ${sixMonthData.length} candles`);
     console.log(`- 3-month data (5M intervals): ${threeMonthData.length} candles`);
     console.log(`- Recent (1M intervals): ${recentData.length} candles`);
@@ -242,13 +256,19 @@ class GoldDataGenerator {
     console.log(`Data saved to: ${filePath}`);
   }
 
-  // Generate additional high-frequency datasets
+  // Generate additional high-frequency datasets (commented out to save disk space)
   generateHighFrequencyDatasets() {
+    console.log('High-frequency datasets generation skipped to save disk space.');
+    console.log('Only main dataset (trading-data.json) is generated.');
+    
+    // Uncomment the following code if you need high-frequency datasets in the future:
+    /*
     console.log('Generating high-frequency datasets...');
     
     const now = new Date();
     const oneWeekAgo = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 7, now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
     const oneDayAgo = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1, now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
+    const oneMonthAgo = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, now.getUTCDate(), now.getUTCHours(), now.getUTCMinutes(), now.getUTCSeconds()));
     
     // Generate 30-second data for the last week
     const thirtySecondData = this.generateIntradayData(oneWeekAgo, now, 30);
@@ -258,9 +278,15 @@ class GoldDataGenerator {
     const tenSecondData = this.generateIntradayData(oneDayAgo, now, 10);
     this.saveData(tenSecondData, 'trading-data-10s.json');
     
+    // Generate 1-minute data for the last month (for better granularity)
+    const oneMinuteData = this.generateDataForPeriod(oneMonthAgo, now, 1);
+    this.saveData(oneMinuteData, 'trading-data-1m.json');
+    
     console.log(`Generated high-frequency datasets:`);
     console.log(`- 30-second data: ${thirtySecondData.length} candles`);
     console.log(`- 10-second data: ${tenSecondData.length} candles`);
+    console.log(`- 1-minute data: ${oneMinuteData.length} candles`);
+    */
   }
 
   // Generate and save all datasets
@@ -281,7 +307,7 @@ class GoldDataGenerator {
     console.log(`📊 Generated ${mainData.length} data points for main dataset`);
     console.log(`📅 Date range: ${mainData[0]?.timestamp} to ${mainData[mainData.length - 1]?.timestamp}`);
     console.log(`💰 Price range: $${priceRange.min.toFixed(2)} - $${priceRange.max.toFixed(2)}`);
-    console.log(`📁 Additional high-frequency datasets saved in public/data/`);
+    console.log(`📁 Main dataset saved as trading-data.json`);
   }
 }
 
