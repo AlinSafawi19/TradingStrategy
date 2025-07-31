@@ -1,0 +1,612 @@
+/* Performance-optimized CSS for TradingView application */
+
+/* Spin animation for loading spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Indicator dot colors */
+.indicator-dot-ssl {
+  color: #EAB308;
+}
+
+.indicator-dot-trend {
+  color: #EC4899;
+}
+
+/* Hardware acceleration and rendering optimizations */
+.chart-container {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+.chart-grab {
+  cursor: grab;
+  contain: layout style;
+  transform: translateZ(0);
+}
+
+.chart-dragging {
+  cursor: move;
+  contain: layout style;
+  transform: translateZ(0);
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Optimized button styles */
+button {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Trading Indicator Styles */
+.trading-indicator {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  transition: all 0.2s ease-in-out;
+}
+
+.trading-indicator-buy {
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: white;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+}
+
+.trading-indicator-sell {
+  background: linear-gradient(135deg, #EF4444, #DC2626);
+  color: white;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3);
+}
+
+.trading-indicator-neutral {
+  background: linear-gradient(135deg, #6B7280, #4B5563);
+  color: white;
+  box-shadow: 0 2px 4px rgba(107, 114, 128, 0.3);
+}
+
+.trading-indicator-dark {
+  background: linear-gradient(135deg, #374151, #1F2937);
+  color: #D1D5DB;
+  box-shadow: 0 2px 4px rgba(55, 65, 81, 0.3);
+}
+
+.trading-indicator-light {
+  background: linear-gradient(135deg, #F3F4F6, #E5E7EB);
+  color: #374151;
+  box-shadow: 0 2px 4px rgba(243, 244, 246, 0.3);
+}
+
+/* Indicator status badges */
+.indicator-badge {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease-in-out;
+}
+
+.indicator-badge-buy {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.indicator-badge-sell {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #DC2626;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.indicator-badge-neutral {
+  background-color: rgba(107, 114, 128, 0.1);
+  color: #6B7280;
+  border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.indicator-badge-dark {
+  background-color: rgba(55, 65, 81, 0.2);
+  color: #D1D5DB;
+  border: 1px solid rgba(55, 65, 81, 0.3);
+}
+
+.indicator-badge-light {
+  background-color: rgba(243, 244, 246, 0.8);
+  color: #374151;
+  border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+/* Signal indicator animations */
+.signal-indicator {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.signal-indicator-buy {
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0);
+  }
+}
+
+.signal-indicator-sell {
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0);
+  }
+}
+
+/* Price line optimizations */
+.current-price-line-* {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  pointer-events: none;
+}
+
+.price-line-green-light {
+  background-color: #10B981;
+  box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+}
+
+.price-line-green-dark {
+  background-color: #059669;
+  box-shadow: 0 0 4px rgba(5, 150, 105, 0.5);
+}
+
+.price-line-red-light {
+  background-color: #EF4444;
+  box-shadow: 0 0 4px rgba(239, 68, 68, 0.5);
+}
+
+.price-line-red-dark {
+  background-color: #DC2626;
+  box-shadow: 0 0 4px rgba(220, 38, 38, 0.5);
+}
+
+/* Price display optimizations */
+.price-display-dynamic {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  pointer-events: none;
+}
+
+.price-display-positioned {
+  position: absolute;
+  right: 0;
+  z-index: 10;
+  transform: translateY(-50%);
+}
+
+.price-line-connector {
+  width: 16px;
+  height: 2px;
+}
+
+.price-display-top-0 { top: 0%; }
+.price-display-top-1 { top: 1%; }
+.price-display-top-2 { top: 2%; }
+.price-display-top-3 { top: 3%; }
+.price-display-top-4 { top: 4%; }
+.price-display-top-5 { top: 5%; }
+.price-display-top-6 { top: 6%; }
+.price-display-top-7 { top: 7%; }
+.price-display-top-8 { top: 8%; }
+.price-display-top-9 { top: 9%; }
+.price-display-top-10 { top: 10%; }
+.price-display-top-11 { top: 11%; }
+.price-display-top-12 { top: 12%; }
+.price-display-top-13 { top: 13%; }
+.price-display-top-14 { top: 14%; }
+.price-display-top-15 { top: 15%; }
+.price-display-top-16 { top: 16%; }
+.price-display-top-17 { top: 17%; }
+.price-display-top-18 { top: 18%; }
+.price-display-top-19 { top: 19%; }
+.price-display-top-20 { top: 20%; }
+.price-display-top-21 { top: 21%; }
+.price-display-top-22 { top: 22%; }
+.price-display-top-23 { top: 23%; }
+.price-display-top-24 { top: 24%; }
+.price-display-top-25 { top: 25%; }
+.price-display-top-26 { top: 26%; }
+.price-display-top-27 { top: 27%; }
+.price-display-top-28 { top: 28%; }
+.price-display-top-29 { top: 29%; }
+.price-display-top-30 { top: 30%; }
+.price-display-top-31 { top: 31%; }
+.price-display-top-32 { top: 32%; }
+.price-display-top-33 { top: 33%; }
+.price-display-top-34 { top: 34%; }
+.price-display-top-35 { top: 35%; }
+.price-display-top-36 { top: 36%; }
+.price-display-top-37 { top: 37%; }
+.price-display-top-38 { top: 38%; }
+.price-display-top-39 { top: 39%; }
+.price-display-top-40 { top: 40%; }
+.price-display-top-41 { top: 41%; }
+.price-display-top-42 { top: 42%; }
+.price-display-top-43 { top: 43%; }
+.price-display-top-44 { top: 44%; }
+.price-display-top-45 { top: 45%; }
+.price-display-top-46 { top: 46%; }
+.price-display-top-47 { top: 47%; }
+.price-display-top-48 { top: 48%; }
+.price-display-top-49 { top: 49%; }
+.price-display-top-50 { top: 50%; }
+.price-display-top-51 { top: 51%; }
+.price-display-top-52 { top: 52%; }
+.price-display-top-53 { top: 53%; }
+.price-display-top-54 { top: 54%; }
+.price-display-top-55 { top: 55%; }
+.price-display-top-56 { top: 56%; }
+.price-display-top-57 { top: 57%; }
+.price-display-top-58 { top: 58%; }
+.price-display-top-59 { top: 59%; }
+.price-display-top-60 { top: 60%; }
+.price-display-top-61 { top: 61%; }
+.price-display-top-62 { top: 62%; }
+.price-display-top-63 { top: 63%; }
+.price-display-top-64 { top: 64%; }
+.price-display-top-65 { top: 65%; }
+.price-display-top-66 { top: 66%; }
+.price-display-top-67 { top: 67%; }
+.price-display-top-68 { top: 68%; }
+.price-display-top-69 { top: 69%; }
+.price-display-top-70 { top: 70%; }
+.price-display-top-71 { top: 71%; }
+.price-display-top-72 { top: 72%; }
+.price-display-top-73 { top: 73%; }
+.price-display-top-74 { top: 74%; }
+.price-display-top-75 { top: 75%; }
+.price-display-top-76 { top: 76%; }
+.price-display-top-77 { top: 77%; }
+.price-display-top-78 { top: 78%; }
+.price-display-top-79 { top: 79%; }
+.price-display-top-80 { top: 80%; }
+.price-display-top-81 { top: 81%; }
+.price-display-top-82 { top: 82%; }
+.price-display-top-83 { top: 83%; }
+.price-display-top-84 { top: 84%; }
+.price-display-top-85 { top: 85%; }
+.price-display-top-86 { top: 86%; }
+.price-display-top-87 { top: 87%; }
+.price-display-top-88 { top: 88%; }
+.price-display-top-89 { top: 89%; }
+.price-display-top-90 { top: 90%; }
+.price-display-top-91 { top: 91%; }
+.price-display-top-92 { top: 92%; }
+.price-display-top-93 { top: 93%; }
+.price-display-top-94 { top: 94%; }
+.price-display-top-95 { top: 95%; }
+.price-display-top-96 { top: 96%; }
+.price-display-top-97 { top: 97%; }
+.price-display-top-98 { top: 98%; }
+
+/* Canvas optimizations */
+canvas {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  image-rendering: optimizeSpeed;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+  image-rendering: pixelated;
+}
+
+/* Canvas chart specific styles */
+.canvas-chart {
+  position: absolute;
+  inset: 0;
+}
+
+/* Trend Fusion subplot styles */
+.trend-fusion-subplot {
+  position: absolute;
+  inset: 0;
+  border-top: 1px solid;
+  border-color: rgba(107, 114, 128, 0.2);
+}
+
+.dark .trend-fusion-subplot {
+  border-color: rgba(55, 65, 81, 0.3);
+}
+
+/* SVG optimizations */
+svg {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  shape-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
+}
+
+/* Grid and axis optimizations */
+.grid-line {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  pointer-events: none;
+}
+
+.axis-label {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  pointer-events: none;
+  text-rendering: optimizeLegibility;
+}
+
+/* Performance monitor optimizations */
+.performance-monitor {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  z-index: 1000;
+}
+
+/* Loading spinner optimizations */
+.loading-spinner {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Ensure loading spinner animation works */
+.loading-spinner svg,
+.loading-spinner .animate-spin {
+  animation: spin 1s linear infinite !important;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Theme-specific optimizations */
+.dark-mode {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.light-mode {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Responsive optimizations */
+@media (max-width: 768px) {
+  .chart-container {
+    contain: layout style paint;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  button {
+    contain: layout style;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}
+
+/* High DPI display optimizations */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  canvas {
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  svg {
+    shape-rendering: geometricPrecision;
+  }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .chart-container {
+    transition: none !important;
+  }
+  
+  button {
+    transition: none !important;
+  }
+  
+  /* Keep loading spinner animation even with reduced motion */
+  .animate-spin {
+    animation-duration: 1s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
+/* Memory optimization for large datasets */
+.large-dataset {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Virtual scrolling optimizations */
+.virtual-scroll-container {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  overflow: hidden;
+}
+
+.virtual-scroll-item {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Event handling optimizations */
+.event-optimized {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  pointer-events: auto;
+}
+
+.event-passive {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  pointer-events: none;
+}
+
+/* Animation frame optimizations */
+.raf-optimized {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+}
+
+/* Memory management optimizations */
+.memory-optimized {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* GPU acceleration hints */
+.gpu-accelerated {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  filter: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+/* Layer optimization for complex charts */
+.chart-layer {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  isolation: isolate;
+}
+
+/* Performance-critical elements */
+.performance-critical {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  isolation: isolate;
+  z-index: 1;
+}
+
+/* Optimized transitions */
+.optimized-transition {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  transition: transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Memory-efficient animations */
+.memory-efficient-animation {
+  contain: layout style;
+  transform: translateZ(0);
+  will-change: transform;
+  animation: none;
+  transition: none;
+}
+
+/* High-performance rendering */
+.high-performance {
+  contain: layout style paint;
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  isolation: isolate;
+  filter: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+  border-radius: 0;
+  opacity: 1;
+  visibility: visible;
+  display: block;
+  position: relative;
+  overflow: visible;
+  clip: auto;
+  clip-path: none;
+  mask: none;
+  -webkit-mask-image: none;
+  mask-image: none;
+  -webkit-mask-size: auto;
+  mask-size: auto;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-position: 0% 0%;
+  mask-position: 0% 0%;
+  -webkit-mask-clip: border-box;
+  mask-clip: border-box;
+  -webkit-mask-origin: border-box;
+  mask-origin: border-box;
+}
