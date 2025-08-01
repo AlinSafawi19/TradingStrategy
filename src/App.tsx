@@ -1278,8 +1278,25 @@ export default function TradingDashboard() {
     initializeData();
   }, []);
 
+  // Mobile viewport height fix
+  useEffect(() => {
+    const setViewportHeight = () => {
+      const vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    };
+
+    setViewportHeight();
+    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('orientationchange', setViewportHeight);
+
+    return () => {
+      window.removeEventListener('resize', setViewportHeight);
+      window.removeEventListener('orientationchange', setViewportHeight);
+    };
+  }, []);
+
   return (
-    <div className={`h-screen flex flex-col trading-dashboard ${isDarkMode ? 'bg-gray-900 text-white' : 'light-mode-enhanced'}`}>
+    <div className={`h-screen flex flex-col trading-dashboard mobile-viewport-fix ${isDarkMode ? 'bg-gray-900 text-white' : 'light-mode-enhanced'}`}>
       {/* Header */}
       <header className={`border-b px-4 sm:px-6 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-lg ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'header-enhanced'}`}>
         <div className="flex items-center space-x-2 mb-2 sm:mb-0">
@@ -1484,11 +1501,11 @@ export default function TradingDashboard() {
       <footer className={`border-t px-4 sm:px-6 py-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'footer-enhanced'}`}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
           {/* Time Range Selection */}
-          <div className="flex flex-wrap items-center gap-1">
-            <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-slate-700'} mr-2`}>
+          <div className="flex flex-wrap items-center gap-1 min-w-0 overflow-hidden">
+            <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-slate-700'} mr-2 flex-shrink-0`}>
               Time Range:
             </span>
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1 min-w-0 overflow-x-auto">
               {[
                 { key: '1H', title: '1 Hour' },
                 { key: '1D', title: '1 Day' },
@@ -1738,7 +1755,7 @@ export default function TradingDashboard() {
           </div>
 
           {/* UTC Display */}
-          <div className="flex justify-center items-center">
+          <div className="flex justify-center items-center flex-shrink-0">
             <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
               UTC: {new Date().toLocaleTimeString('en-US', {
                 hour: '2-digit',
