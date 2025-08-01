@@ -10,6 +10,18 @@
   }
 }
 
+/* Loading spinner inline styles replacement */
+.loading-spinner-icon {
+  animation: spin 1s linear infinite;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Chart container touch action */
+.chart-container-touch-none {
+  touch-action: none;
+}
+
 /* Enhanced Light Mode Styles */
 .light-mode-enhanced {
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
@@ -523,18 +535,123 @@ svg {
   will-change: transform;
 }
 
-/* Responsive optimizations */
+/* Mobile Responsive Optimizations */
 @media (max-width: 768px) {
   .chart-container {
     contain: layout style paint;
     transform: translateZ(0);
     will-change: transform;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
   }
   
   button {
     contain: layout style;
     transform: translateZ(0);
     will-change: transform;
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Mobile-specific zoom controls */
+  .chart-container .absolute.top-4.left-4 {
+    top: 8px;
+    left: 8px;
+  }
+
+  .chart-container .absolute.top-4.left-4 button {
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+
+  /* Mobile price display */
+  .price-display-dynamic {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  /* Mobile header adjustments */
+  .trading-dashboard header {
+    padding: 8px 12px;
+  }
+
+  .trading-dashboard header h2 {
+    font-size: 16px;
+  }
+
+  /* Mobile footer adjustments */
+  .trading-dashboard footer {
+    padding: 8px 12px;
+  }
+
+  /* Mobile time range buttons */
+  .trading-dashboard footer button {
+    padding: 8px 12px;
+    font-size: 12px;
+    margin: 2px;
+  }
+
+  /* Mobile indicator badges */
+  .indicator-badge {
+    padding: 6px 10px;
+    font-size: 11px;
+    margin: 2px;
+  }
+
+  /* Mobile trading indicator */
+  .trading-indicator {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+
+  /* Mobile modal adjustments */
+  .fixed.inset-0.z-50 .max-w-2xl {
+    margin: 16px;
+    max-width: calc(100vw - 32px);
+  }
+
+  /* Mobile canvas adjustments */
+  canvas {
+    touch-action: none;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .trading-dashboard header h2 {
+    font-size: 14px;
+  }
+
+  .trading-dashboard footer button {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .indicator-badge {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .trading-indicator {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+}
+
+/* Prevent double-tap zoom on mobile */
+@media (max-width: 768px) {
+  * {
+    touch-action: manipulation;
+  }
+  
+  .chart-container {
+    touch-action: none;
   }
 }
 

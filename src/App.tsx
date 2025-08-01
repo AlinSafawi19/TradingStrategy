@@ -57,12 +57,7 @@ const LoadingSpinner = ({ size = 'md', isDarkMode }: { size?: 'sm' | 'md' | 'lg'
   return (
     <div className="flex items-center justify-center loading-spinner">
       <FiLoader
-        className={`${sizeClasses[size]} animate-spin ${isDarkMode ? 'text-gray-400' : 'text-blue-600'}`}
-        style={{
-          animation: 'spin 1s linear infinite',
-          transform: 'translateZ(0)',
-          willChange: 'transform'
-        }}
+        className={`${sizeClasses[size]} animate-spin loading-spinner-icon ${isDarkMode ? 'text-gray-400' : 'text-blue-600'}`}
       />
     </div>
   );
@@ -817,8 +812,8 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
     return () => window.removeEventListener('resize', updateSize);
   }, [chartData.length]);
 
-  // Optimized mouse event handlers with passive listeners
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+  // Touch and mouse event handlers with mobile support
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
     e.preventDefault();
     if (chartRef.current) {
       isDraggingRef.current = true;
@@ -828,8 +823,8 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
     }
   }, []);
 
-  const handleMouseMove = useCallback(
-    rafThrottle((e: React.MouseEvent) => {
+  const handlePointerMove = useCallback(
+    rafThrottle((e: React.PointerEvent) => {
       if (!isDraggingRef.current || !chartRef.current) return;
 
       e.preventDefault();
@@ -861,10 +856,130 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
     [chartData.length]
   );
 
-  const handleMouseUp = useCallback((e?: React.MouseEvent) => {
+  const handlePointerUp = useCallback((e?: React.PointerEvent) => {
     if (e) e.preventDefault();
     isDraggingRef.current = false;
     setIsDragging(false);
+  }, []);
+
+  // Touch-specific handlers for mobile with pinch-to-zoom support
+  const touchStartRef = useRef<{ x: number; y: number; distance: number } | null>(null);
+  const initialViewportRef = useRef<any>(null);
+
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    if (chartRef.current) {
+      if (e.touches.length === 1) {
+        // Single touch - pan
+        const touch = e.touches[0];
+        isDraggingRef.current = true;
+        setIsDragging(true);
+        dragStartRef.current = { x: touch.clientX, y: touch.clientY };
+        lastViewportRef.current = { ...viewportRef.current };
+      } else if (e.touches.length === 2) {
+        // Two touches - pinch to zoom
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const distance = Math.sqrt(
+          Math.pow(touch2.clientX - touch1.clientX, 2) +
+          Math.pow(touch2.clientY - touch1.clientY, 2)
+        );
+        touchStartRef.current = {
+          x: (touch1.clientX + touch2.clientX) / 2,
+          y: (touch1.clientY + touch2.clientY) / 2,
+          distance
+        };
+        initialViewportRef.current = { ...viewportRef.current };
+      }
+    }
+  }, []);
+
+  const handleTouchMove = useCallback(
+    rafThrottle((e: React.TouchEvent) => {
+      if (!chartRef.current) return;
+
+      e.preventDefault();
+
+      if (e.touches.length === 1 && isDraggingRef.current) {
+        // Single touch pan
+        const touch = e.touches[0];
+        const rect = chartRef.current.getBoundingClientRect();
+        const deltaX = touch.clientX - dragStartRef.current.x;
+        const deltaY = touch.clientY - dragStartRef.current.y;
+
+        const panXPercent = deltaX / rect.width;
+        const panYPercent = deltaY / rect.height;
+
+        const dataRange = viewportRef.current.endIndex - viewportRef.current.startIndex;
+        const priceRange = viewportRef.current.endPrice - viewportRef.current.startPrice;
+
+        const newStartIndex = Math.max(0, lastViewportRef.current.startIndex - panXPercent * dataRange);
+        const newEndIndex = Math.min(chartData.length - 1, lastViewportRef.current.endIndex - panXPercent * dataRange);
+        const newStartPrice = lastViewportRef.current.startPrice + panYPercent * priceRange;
+        const newEndPrice = lastViewportRef.current.endPrice + panYPercent * priceRange;
+
+        const newViewport = {
+          startIndex: newStartIndex,
+          endIndex: newEndIndex,
+          startPrice: newStartPrice,
+          endPrice: newEndPrice
+        };
+
+        setViewport(newViewport);
+        viewportRef.current = newViewport;
+      } else if (e.touches.length === 2 && touchStartRef.current && initialViewportRef.current) {
+        // Two touch pinch-to-zoom
+        const touch1 = e.touches[0];
+        const touch2 = e.touches[1];
+        const currentDistance = Math.sqrt(
+          Math.pow(touch2.clientX - touch1.clientX, 2) +
+          Math.pow(touch2.clientY - touch1.clientY, 2)
+        );
+
+        const scale = currentDistance / touchStartRef.current.distance;
+        const zoomFactor = scale > 1 ? 1.1 : 0.9;
+
+        const rect = chartRef.current.getBoundingClientRect();
+        const centerX = touchStartRef.current.x - rect.left;
+        const centerY = touchStartRef.current.y - rect.top;
+
+        const zoomCenterX = centerX / rect.width;
+        const zoomCenterY = centerY / rect.height;
+
+        const dataRange = initialViewportRef.current.endIndex - initialViewportRef.current.startIndex;
+        const priceRange = initialViewportRef.current.endPrice - initialViewportRef.current.startPrice;
+
+        const newDataRange = dataRange * zoomFactor;
+        const newPriceRange = priceRange * zoomFactor;
+
+        const zoomCenterIndex = initialViewportRef.current.startIndex + zoomCenterX * dataRange;
+        const zoomCenterPrice = initialViewportRef.current.startPrice + (1 - zoomCenterY) * priceRange;
+
+        const newStartIndex = Math.max(0, zoomCenterIndex - zoomCenterX * newDataRange);
+        const newEndIndex = Math.min(chartData.length - 1, zoomCenterIndex + (1 - zoomCenterX) * newDataRange);
+        const newStartPrice = zoomCenterPrice - (1 - zoomCenterY) * newPriceRange;
+        const newEndPrice = zoomCenterPrice + zoomCenterY * newPriceRange;
+
+        const newViewport = {
+          startIndex: newStartIndex,
+          endIndex: newEndIndex,
+          startPrice: newStartPrice,
+          endPrice: newEndPrice
+        };
+
+        setViewport(newViewport);
+        viewportRef.current = newViewport;
+      }
+    }),
+    [chartData.length]
+  );
+
+  const handleTouchEnd = useCallback((e?: React.TouchEvent) => {
+    if (e) e.preventDefault();
+    isDraggingRef.current = false;
+    setIsDragging(false);
+    touchStartRef.current = null;
+    initialViewportRef.current = null;
   }, []);
 
   // Optimized zoom controls
@@ -944,11 +1059,14 @@ const MainChart = ({ strategy, isDarkMode, indicatorSettings }: {
         {/* Chart Container */}
         <div
           ref={chartRef}
-                      className={`h-full ${isDarkMode ? 'bg-gray-900' : ''} relative overflow-hidden select-none chart-container ${isDragging ? 'chart-dragging' : 'chart-grab'}`}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
+          className={`h-full ${isDarkMode ? 'bg-gray-900' : ''} relative overflow-hidden select-none chart-container ${isDragging ? 'chart-dragging' : 'chart-grab'} chart-container-touch-none`}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           onDragStart={(e) => e.preventDefault()}
         >
 
@@ -1163,43 +1281,41 @@ export default function TradingDashboard() {
   return (
     <div className={`h-screen flex flex-col trading-dashboard ${isDarkMode ? 'bg-gray-900 text-white' : 'light-mode-enhanced'}`}>
       {/* Header */}
-      <header className={`border-b px-6 py-2 flex justify-between items-center shadow-lg ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'header-enhanced'}`}>
-                  <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <GiGoldBar className={`w-6 h-6 ${isDarkMode ? 'text-gray-400' : 'text-slate-700'}`} />
-              <h2 className={`text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Gold Spot / U.S. Dollar • 1m • OANDA</h2>
-            </div>
+      <header className={`border-b px-4 sm:px-6 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-lg ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'header-enhanced'}`}>
+        <div className="flex items-center space-x-2 mb-2 sm:mb-0">
+          <GiGoldBar className={`w-5 h-5 sm:w-6 sm:h-6 ${isDarkMode ? 'text-gray-400' : 'text-slate-700'}`} />
+          <h2 className={`text-sm sm:text-xl font-semibold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Gold Spot / U.S. Dollar • 1m • OANDA</h2>
+        </div>
+        <div className="flex items-center space-x-2 sm:space-x-4">
+          <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'} hidden sm:block`}>
+            Data: File-based
           </div>
-          <div className="flex items-center space-x-4">
-            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
-              Data: File-based
-            </div>
-                      <button
-              type='button'
-              onClick={() => setShowIndicatorSettings(true)}
-              className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 border btn-optimized ${isDarkMode
-                ? 'bg-gray-700 border-gray-500 hover:bg-gray-600'
-                : 'button-enhanced'
-                }`}
-              title="Indicator Settings"
-            >
-              <FiSettings className={`w-5 h-5 ${isDarkMode ? 'text-gray-300' : 'text-slate-600'}`} />
-            </button>
-            <button
-              type='button'
-              onClick={toggleTheme}
-              className={`p-2 rounded-lg transition-all duration-200 hover:scale-105 border btn-optimized ${isDarkMode
-                ? 'bg-gray-700 border-gray-500 hover:bg-gray-600'
-                : 'button-enhanced'
-                }`}
-              title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-            >
-              {isDarkMode ? (
-                <FiMoon className="w-5 h-5 text-gray-300" />
-              ) : (
-                <FiSun className="w-5 h-5 text-slate-600" />
-              )}
-            </button>
+          <button
+            type='button'
+            onClick={() => setShowIndicatorSettings(true)}
+            className={`p-2 sm:p-2 rounded-lg transition-all duration-200 hover:scale-105 border btn-optimized ${isDarkMode
+              ? 'bg-gray-700 border-gray-500 hover:bg-gray-600'
+              : 'button-enhanced'
+              }`}
+            title="Indicator Settings"
+          >
+            <FiSettings className={`w-4 h-4 sm:w-5 sm:h-5 ${isDarkMode ? 'text-gray-300' : 'text-slate-600'}`} />
+          </button>
+          <button
+            type='button'
+            onClick={toggleTheme}
+            className={`p-2 sm:p-2 rounded-lg transition-all duration-200 hover:scale-105 border btn-optimized ${isDarkMode
+              ? 'bg-gray-700 border-gray-500 hover:bg-gray-600'
+              : 'button-enhanced'
+              }`}
+            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDarkMode ? (
+              <FiMoon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-300" />
+            ) : (
+              <FiSun className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600" />
+            )}
+          </button>
         </div>
       </header>
 
@@ -1310,12 +1426,12 @@ export default function TradingDashboard() {
               if (strategy.priceData.length < minDataPoints) {
                 return (
                   <div className="flex items-center space-x-2">
-                                      <div className={`px-3 py-1 rounded-full text-xs font-bold trading-indicator ${isDarkMode ? 'trading-indicator-dark' : 'trading-indicator-enhanced'}`}>
-                    INSUFFICIENT DATA
-                  </div>
-                  <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'} font-medium`}>
-                    {strategy.priceData.length} / {minDataPoints} points
-                  </div>
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold trading-indicator ${isDarkMode ? 'trading-indicator-dark' : 'trading-indicator-enhanced'}`}>
+                      INSUFFICIENT DATA
+                    </div>
+                    <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'} font-medium`}>
+                      {strategy.priceData.length} / {minDataPoints} points
+                    </div>
                   </div>
                 );
               }
@@ -1365,72 +1481,74 @@ export default function TradingDashboard() {
       </footer>
 
       {/* Time Range Footer */}
-      <footer className={`border-t px-6 py-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'footer-enhanced'}`}>
-        <div className="flex justify-between items-center">
+      <footer className={`border-t px-4 sm:px-6 py-2 ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'footer-enhanced'}`}>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-2 sm:space-y-0">
           {/* Time Range Selection */}
-          <div className="flex items-center space-x-1">
-            <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-slate-700'}`}>
+          <div className="flex flex-wrap items-center gap-1">
+            <span className={`text-xs font-medium ${isDarkMode ? 'text-gray-400' : 'text-slate-700'} mr-2`}>
               Time Range:
             </span>
-            {[
-              { key: '1H', title: '1 Hour' },
-              { key: '1D', title: '1 Day' },
-              { key: '5D', title: '5 Days' },
-              { key: '1M', title: '1 Month' },
-              { key: '3M', title: '3 Months' },
-              { key: '6M', title: '6 Months' },
-              { key: 'YTD', title: 'Year to Date' },
-              { key: '1Y', title: '1 Year' },
-              { key: '5Y', title: '5 Years' },
-              { key: '10Y', title: '10 Years' },
-              { key: 'All', title: 'All Data' }
-            ].map(({ key, title }) => (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handleTimeRangeChange(key)}
-                disabled={isLoading}
-                title={title}
-                className={`px-3 py-1 text-xs font-medium rounded transition-all duration-200 flex items-center space-x-1 btn-optimized ${isLoading
-                  ? isDarkMode
-                    ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-75'
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed opacity-75'
-                  : key === selectedTimeRange
+            <div className="flex flex-wrap gap-1">
+              {[
+                { key: '1H', title: '1 Hour' },
+                { key: '1D', title: '1 Day' },
+                { key: '5D', title: '5 Days' },
+                { key: '1M', title: '1 Month' },
+                { key: '3M', title: '3 Months' },
+                { key: '6M', title: '6 Months' },
+                { key: 'YTD', title: 'Year to Date' },
+                { key: '1Y', title: '1 Year' },
+                { key: '5Y', title: '5 Years' },
+                { key: '10Y', title: '10 Years' },
+                { key: 'All', title: 'All Data' }
+              ].map(({ key, title }) => (
+                <button
+                  key={key}
+                  type="button"
+                  onClick={() => handleTimeRangeChange(key)}
+                  disabled={isLoading}
+                  title={title}
+                  className={`px-2 sm:px-3 py-1 text-xs font-medium rounded transition-all duration-200 flex items-center space-x-1 btn-optimized ${isLoading
                     ? isDarkMode
-                      ? 'bg-gray-700 text-gray-300 border border-gray-500 shadow-md'
-                      : 'button-selected'
-                    : isDarkMode
-                      ? 'text-gray-300 hover:text-white hover:bg-gray-700 hover:shadow-sm'
-                      : 'button-enhanced'
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed opacity-75'
+                      : 'bg-gray-200 text-gray-500 cursor-not-allowed opacity-75'
+                    : key === selectedTimeRange
+                      ? isDarkMode
+                        ? 'bg-gray-700 text-gray-300 border border-gray-500 shadow-md'
+                        : 'button-selected'
+                      : isDarkMode
+                        ? 'text-gray-300 hover:text-white hover:bg-gray-700 hover:shadow-sm'
+                        : 'button-enhanced'
+                    }`}
+                >
+                  <span>{key}</span>
+                </button>
+              ))}
+
+              {/* Separator */}
+              <div className={`w-px h-4 mx-1 ${isDarkMode ? 'bg-gray-600' : 'bg-slate-300'}`}></div>
+
+              {/* Custom Date Range Icon */}
+              <button
+                type="button"
+                onClick={() => setShowCustomDatePicker(!showCustomDatePicker)}
+                className={`p-1 rounded transition-colors btn-optimized ${selectedTimeRange === 'CUSTOM'
+                  ? isDarkMode
+                    ? 'bg-gray-700 text-gray-300 border border-gray-500'
+                    : 'button-selected'
+                  : isDarkMode
+                    ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                    : 'button-enhanced'
                   }`}
+                title="Custom Date Range"
               >
-                <span>{key}</span>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                  <path d="M4 8a1 1 0 011-1h10a1 1 0 011 1v8a1 1 0 01-1 1H5a1 1 0 01-1-1V8z" />
+                  <path d="M7 12a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" />
+                </svg>
               </button>
-            ))}
-
-            {/* Separator */}
-            <div className={`w-px h-4 mx-2 ${isDarkMode ? 'bg-gray-600' : 'bg-slate-300'}`}></div>
-
-            {/* Custom Date Range Icon */}
-            <button
-              type="button"
-              onClick={() => setShowCustomDatePicker(!showCustomDatePicker)}
-              className={`p-1 rounded transition-colors btn-optimized ${selectedTimeRange === 'CUSTOM'
-                ? isDarkMode
-                  ? 'bg-gray-700 text-gray-300 border border-gray-500'
-                  : 'button-selected'
-                : isDarkMode
-                  ? 'text-gray-300 hover:text-white hover:bg-gray-700'
-                  : 'button-enhanced'
-                }`}
-              title="Custom Date Range"
-            >
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
-                <path d="M4 8a1 1 0 011-1h10a1 1 0 011 1v8a1 1 0 01-1 1H5a1 1 0 01-1-1V8z" />
-                <path d="M7 12a1 1 0 011-1h4a1 1 0 110 2H8a1 1 0 01-1-1z" />
-              </svg>
-            </button>
+            </div>
 
             {/* Custom Date Range Picker */}
             {showCustomDatePicker && (
@@ -1621,8 +1739,8 @@ export default function TradingDashboard() {
 
           {/* UTC Display */}
           <div className="flex justify-center items-center">
-            <span className={`text-xs ml-4 ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
-              All times in UTC: {new Date().toLocaleTimeString('en-US', {
+            <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+              UTC: {new Date().toLocaleTimeString('en-US', {
                 hour: '2-digit',
                 minute: '2-digit',
                 second: '2-digit',
