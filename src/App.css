@@ -364,7 +364,7 @@ button {
 }
 
 /* Price line optimizations */
-.current-price-line-* {
+.price-line-optimized {
   contain: layout style;
   transform: translateZ(0);
   will-change: transform;
