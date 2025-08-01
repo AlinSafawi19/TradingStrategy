@@ -5,7 +5,7 @@ interface WorkerTask {
   id: string;
   resolve: (value: any) => void;
   reject: (error: Error) => void;
-  timeout: number;
+  timeout: ReturnType<typeof setTimeout>;
 }
 
 class WorkerManager {

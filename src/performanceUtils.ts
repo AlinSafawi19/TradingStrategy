@@ -117,7 +117,7 @@ export const debounce = <T extends (...args: any[]) => any>(
   wait: number,
   immediate = false
 ): ((...args: Parameters<T>) => void) => {
-  let timeout: number | null = null;
+  let timeout: ReturnType<typeof setTimeout> | null = null;
 
   const later = () => {
     timeout = null;
@@ -139,7 +139,7 @@ export const throttle = <T extends (...args: any[]) => any>(
   options: { leading?: boolean; trailing?: boolean } = {}
 ): ((...args: Parameters<T>) => void) => {
   let inThrottle: boolean;
-  let lastFunc: number;
+  let lastFunc: ReturnType<typeof setTimeout>;
   let lastRan: number;
 
   return (...args: Parameters<T>) => {
@@ -285,7 +285,7 @@ export const addOptimizedEventListener = (
 
 // Enhanced resize handler with better performance
 export const createResizeHandler = (callback: () => void, delay = 250) => {
-  let timeoutId: number;
+  let timeoutId: ReturnType<typeof setTimeout>;
   return () => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(callback, delay);

@@ -76,9 +76,14 @@ const loadDefaultData = async (): Promise<PriceData[]> => {
     console.log('Loading default trading data (1D)...');
 
     // Load data from public/data/trading-data.json
-    const response = await fetch('/data/trading-data.json');
+    const dataPath = './data/trading-data.json';
+    console.log('Attempting to load data from:', dataPath);
+    
+    const response = await fetch(dataPath);
+    console.log('Response status:', response.status, response.statusText);
+    
     if (!response.ok) {
-      throw new Error(`Failed to load data: ${response.status}`);
+      throw new Error(`Failed to load data: ${response.status} ${response.statusText}`);
     }
 
     loadProgress = 30;
