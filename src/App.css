@@ -12,15 +12,17 @@
 /* Global mobile viewport fixes */
 @media (max-width: 768px) {
   html, body {
+    height: 100%;
     height: 100vh;
     height: 100dvh;
     height: calc(var(--vh, 1vh) * 100);
     overflow: hidden;
-    margin: 0;
-    padding: 0;
+    position: fixed;
+    width: 100%;
   }
 
   #root {
+    height: 100%;
     height: 100vh;
     height: 100dvh;
     height: calc(var(--vh, 1vh) * 100);
@@ -652,19 +654,17 @@ svg {
 
   /* Mobile footer adjustments */
   .trading-dashboard footer {
-    padding: 6px 8px;
+    padding: 8px 12px;
     overflow-x: auto;
     overflow-y: hidden;
     white-space: nowrap;
     flex-shrink: 0;
-    max-width: 100vw;
   }
 
   /* Mobile main content area */
   .trading-dashboard main {
     flex: 1;
     min-height: 0;
-    max-height: calc(100vh - 120px); /* Account for header and footer */
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -685,11 +685,10 @@ svg {
 
   /* Mobile time range buttons */
   .trading-dashboard footer button {
-    padding: 4px 6px;
-    font-size: 10px;
+    padding: 6px 8px;
+    font-size: 11px;
     margin: 1px;
     flex-shrink: 0;
-    min-width: auto;
   }
 
   /* Mobile indicator badges */
@@ -779,18 +778,7 @@ svg {
     gap: 1px;
   }
 
-  /* Hide some time range buttons on very small screens */
-  .trading-dashboard footer button:not(:nth-child(-n+5)) {
-    display: none;
-  }
 
-  /* Show a "more" indicator */
-  .trading-dashboard footer .flex.flex-wrap.gap-1::after {
-    content: "...";
-    color: #6b7280;
-    font-size: 10px;
-    margin-left: 4px;
-  }
 }
 
 /* Prevent double-tap zoom on mobile */

@@ -1542,9 +1542,6 @@ export default function TradingDashboard() {
                 </button>
               ))}
 
-              {/* Separator */}
-              <div className={`w-px h-4 mx-1 ${isDarkMode ? 'bg-gray-600' : 'bg-slate-300'}`}></div>
-
               {/* Custom Date Range Icon */}
               <button
                 type="button"
